@@ -313967,41 +313967,56 @@ body{
 </div>
 
 <script>
-const box=document.querySelector('.chat-messages');
-box.scrollTop=box.scrollHeight;
-const container = document.getElementById("chatMessages");
-const messages = [...container.querySelectorAll(".message")];
+document.addEventListener("DOMContentLoaded", () => {
+    const box = document.querySelector(".chat-messages");
 
-let lastDate = "";
+    // ---------- DATE SEPARATORS ----------
+    const messages = [...box.querySelectorAll(".message")];
+    let lastDate = "";
 
-const today = new Date();
-const yesterday = new Date();
-yesterday.setDate(today.getDate() - 1);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
 
-function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    const dOnly = d.toDateString();
+    function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        const dOnly = d.toDateString();
 
-    if (dOnly === today.toDateString()) return "Today";
-    if (dOnly === yesterday.toDateString()) return "Yesterday";
+        if (dOnly === today.toDateString()) return "Today";
+        if (dOnly === yesterday.toDateString()) return "Yesterday";
 
-    return d.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-    });
-}
-
-messages.forEach(msg => {
-    const msgDate = msg.dataset.date;
-
-    if (msgDate !== lastDate) {
-        const separator = document.createElement("div");
-        separator.className = "date-separator";
-        separator.innerHTML = `<span>${formatDate(msgDate)}</span>`;
-        container.insertBefore(separator, msg);
-        lastDate = msgDate;
+        return d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        });
     }
+
+    messages.forEach(msg => {
+        const msgDate = msg.dataset.date;
+
+        if (msgDate !== lastDate) {
+            const separator = document.createElement("div");
+            separator.className = "date-separator";
+            separator.innerHTML = `<span>${formatDate(msgDate)}</span>`;
+            box.insertBefore(separator, msg);
+            lastDate = msgDate;
+        }
+    });
+
+    // ---------- RESTORE SCROLL ----------
+    const savedScroll = localStorage.getItem("chatScroll");
+
+    if (savedScroll) {
+        box.scrollTop = savedScroll;
+    } else {
+        box.scrollTop = box.scrollHeight; // first time → bottom
+    }
+
+    // ---------- SAVE SCROLL ----------
+    box.addEventListener("scroll", () => {
+        localStorage.setItem("chatScroll", box.scrollTop);
+    });
 });
 </script>
 </body>
